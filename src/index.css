@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #eef3ff;
+  --color-brand-100: #dce6ff;
+  --color-brand-200: #b8ccff;
+  --color-brand-300: #8aabff;
+  --color-brand-400: #4d7fff;
+  --color-brand-500: #1f5cff;
+  --color-brand-600: #0047ff;
+  --color-brand-700: #0038cc;
+  --color-brand-800: #002c9e;
+  --color-brand-900: #001f70;
+
+  --color-sun-300: #ffe066;
+  --color-sun-400: #ffd633;
+  --color-sun-500: #ffcc00;
+  --color-sun-600: #e6b800;
+
+  --color-ink-900: #0c1330;
+  --color-ink-700: #2b3352;
+  --color-ink-500: #5c6584;
+  --color-ink-400: #8b93ad;
+  --color-ink-300: #b9bfd3;
+
+  --color-mist-50: #f6f7fb;
+  --color-mist-100: #eef0f6;
+  --color-mist-200: #e2e5ef;
+
+  --shadow-card: 0 8px 24px -8px rgb(0 40 158 / 0.10), 0 2px 6px -2px rgb(0 40 158 / 0.06);
+  --shadow-float: 0 20px 48px -12px rgb(0 40 158 / 0.22), 0 4px 12px -4px rgb(0 40 158 / 0.10);
+  --shadow-sheet: 0 -16px 48px -12px rgb(0 31 112 / 0.24);
+}
+
+html,
+body {
+  height: 100%;
+  background: #0a0f24;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  color: var(--color-ink-900);
+  overscroll-behavior: none;
+}
+
+#root {
+  height: 100%;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
