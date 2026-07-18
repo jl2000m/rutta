@@ -47,14 +47,23 @@ export function PassengerCheckoutScreen({ offerId, origin, destination }: Props)
   const companions = offer.companions
   const peopleCount = companions.length + 1
   const seatsTaken = offer.vehicle.capacity - offer.seatsLeft + 1
-  const routeStops = [
+  const routeStops: {
+    id: string
+    label: string
+    detail: string
+    x: number
+    y: number
+    tone: "origin" | "stop" | "pickup" | "destination"
+    marker: string
+    active?: boolean
+  }[] = [
     {
       id: "route-origin",
       label: origin.split(",")[0],
       detail: "Salida",
       x: 15,
       y: 62,
-      tone: "origin" as const,
+      tone: "origin",
       marker: "A",
     },
     ...companions.map((companion, index) => ({
@@ -72,7 +81,7 @@ export function PassengerCheckoutScreen({ offerId, origin, destination }: Props)
       detail: "Tu parada",
       x: 64,
       y: 43,
-      tone: "pickup" as const,
+      tone: "pickup",
       marker: "Tú",
       active: true,
     },
@@ -82,7 +91,7 @@ export function PassengerCheckoutScreen({ offerId, origin, destination }: Props)
       detail: "Destino",
       x: 83,
       y: 30,
-      tone: "destination" as const,
+      tone: "destination",
       marker: "B",
     },
   ]
