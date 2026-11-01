@@ -1,12 +1,22 @@
 import { AnimatePresence, motion, useMotionValue, useTransform } from "framer-motion"
 import { ArrowLeft, Check, Footprints, MapPin, Sparkles, Star, X } from "lucide-react"
+import { CompatibilityBadge, CompatibilityReason } from "../components/ride-preferences-card"
 import { StatusBadge } from "../components/status-badge"
 import { UserAvatar } from "../components/user-avatar"
 import type { MatchCandidate } from "../data/mock"
+import { computeCompatibility, type Compatibility } from "../lib/ride-preferences"
 import { useApp } from "../state/app-context"
 
 export function DriverMatchingScreen() {
-  const { setFlow, pendingCandidates, acceptedPassengers, acceptCandidate, rejectCandidate } = useApp()
+  const { setFlow, pendingCandidates, acceptedPassengers, acceptCandidate, rejectCandidate, ridePreferences } =
+    useApp()
+  // Smart matching: detour first, then affinity with the driver's ride preferences.
+  const rankedCandidates = pendingCandidates
+    .map((candidate) => ({ candidate, compatibility: computeCompatibility(ridePreferences, candidate.persona.preferences) }))
+    .sort(
+      (a, b) =>
+        a.candidate.detourMinutes - b.candidate.detourMinutes || b.compatibility.score - a.compatibility.score,
+    )
   const seatsFull = acceptedPassengers.length >= 3
 
   return (
@@ -26,7 +36,7 @@ export function DriverMatchingScreen() {
             Pasajeros recomendados <Sparkles size={17} className="text-brand-600" />
           </h1>
           <p className="text-[12px] font-semibold text-ink-400">
-            IA de Rutta · Ordenados por menor desvío
+            IA de Rutta · Menor desvío + afinidad
           </p>
         </div>
         <span className="rounded-full bg-brand-600 px-3 py-1.5 text-[12px] font-extrabold text-white">
@@ -46,10 +56,11 @@ export function DriverMatchingScreen() {
 
       <div className="flex-1 space-y-3 overflow-y-auto px-5 pb-32">
         <AnimatePresence>
-          {pendingCandidates.map((candidate) => (
+          {rankedCandidates.map(({ candidate, compatibility }) => (
             <SwipeCard
               key={candidate.id}
               candidate={candidate}
+              compatibility={compatibility}
               disabled={seatsFull}
               onAccept={() => acceptCandidate(candidate)}
               onReject={() => rejectCandidate(candidate)}
@@ -112,12 +123,13 @@ export function DriverMatchingScreen() {
 
 interface SwipeCardProps {
   candidate: MatchCandidate
+  compatibility: Compatibility
   disabled: boolean
   onAccept: () => void
   onReject: () => void
 }
 
-function SwipeCard({ candidate, disabled, onAccept, onReject }: SwipeCardProps) {
+function SwipeCard({ candidate, compatibility, disabled, onAccept, onReject }: SwipeCardProps) {
   const x = useMotionValue(0)
   const acceptOpacity = useTransform(x, [24, 110], [0, 1])
   const rejectOpacity = useTransform(x, [-110, -24], [1, 0])
@@ -168,9 +180,13 @@ function SwipeCard({ candidate, disabled, onAccept, onReject }: SwipeCardProps) 
                 {candidate.persona.rating.toFixed(1)}
               </span>
             </div>
-            <p className="truncate text-[12px] font-semibold text-ink-400">{candidate.persona.role}</p>
+            <div className="mt-0.5 flex items-center gap-2">
+              <p className="min-w-0 truncate text-[12px] font-semibold text-ink-400">{candidate.persona.role}</p>
+              <CompatibilityBadge compatibility={compatibility} />
+            </div>
           </div>
         </div>
+        <CompatibilityReason compatibility={compatibility} />
 
         <div className="mt-3 space-y-1.5 border-t border-ink-900/5 pt-3">
           <p className="flex items-center gap-1.5 text-[12px] font-semibold text-ink-500">

@@ -14,6 +14,7 @@ import {
   type TripCompanion,
   type Vehicle,
 } from "../data/mock"
+import { DEFAULT_PREFERENCES, type RidePreferences } from "../lib/ride-preferences"
 
 export type UserMode = "passenger" | "driver"
 export type Tab = "home" | "trips" | "wallet" | "profile"
@@ -29,6 +30,7 @@ export type FlowScreen =
   | { name: "driver-matching" }
   | { name: "active-trip" }
   | { name: "trip-details"; tripId: string }
+  | { name: "ride-preferences" }
 
 export interface TripPassenger {
   candidate: MatchCandidate
@@ -83,6 +85,20 @@ interface AppState {
   /** Always true — pending KYC never blocks driver actions. */
   isDriverProfileEnabled: boolean
   approvePendingVerifications: () => void
+  ridePreferences: RidePreferences
+  setRidePreferences: (preferences: RidePreferences) => void
+}
+
+const PREFERENCES_STORAGE_KEY = "rutta.ride-preferences"
+
+function loadPreferences(): RidePreferences {
+  try {
+    const stored = localStorage.getItem(PREFERENCES_STORAGE_KEY)
+    if (stored) return { ...DEFAULT_PREFERENCES, ...JSON.parse(stored) }
+  } catch {
+    // Storage unavailable — fall back to defaults.
+  }
+  return DEFAULT_PREFERENCES
 }
 
 const AppContext = createContext<AppState | null>(null)
@@ -102,6 +118,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [vehicles, setVehicles] = useState<Vehicle[]>(DRIVER_VEHICLES)
   const [selectedVehiclePlate, setSelectedVehiclePlate] = useState(DRIVER_VEHICLES[0].plate)
   const [kycSteps, setKycSteps] = useState<KycStep[]>(KYC_STEPS)
+  const [ridePreferences, setRidePreferencesState] = useState<RidePreferences>(loadPreferences)
   const selectedVehicle =
     vehicles.find((vehicle) => vehicle.plate === selectedVehiclePlate) ?? vehicles[0]
   const isDriverProfileEnabled = true
@@ -139,6 +156,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       },
       kycSteps,
       isDriverProfileEnabled,
+      ridePreferences,
+      setRidePreferences: (preferences) => {
+        setRidePreferencesState(preferences)
+        try {
+          localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(preferences))
+        } catch {
+          // Storage unavailable — keep in-memory only.
+        }
+      },
       approvePendingVerifications: () => {
         setKycSteps((previousSteps) =>
           previousSteps.map((step) =>
@@ -221,6 +247,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       selectedVehicle,
       kycSteps,
       isDriverProfileEnabled,
+      ridePreferences,
     ],
   )
 

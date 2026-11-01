@@ -10,6 +10,7 @@ import { PassengerCheckoutScreen } from "./screens/passenger-checkout-screen"
 import { PassengerMatchingScreen } from "./screens/passenger-matching-screen"
 import { PassengerSearchScreen } from "./screens/passenger-search-screen"
 import { ProfileScreen } from "./screens/profile-screen"
+import { RidePreferencesScreen } from "./screens/ride-preferences-screen"
 import { SplashScreen } from "./screens/splash-screen"
 import { TripDetailsScreen } from "./screens/trip-details-screen"
 import { TripsScreen } from "./screens/trips-screen"
@@ -40,6 +41,8 @@ function FlowRouter({ flow }: { flow: FlowScreen }) {
       return <ActiveTripScreen />
     case "trip-details":
       return <TripDetailsScreen tripId={flow.tripId} />
+    case "ride-preferences":
+      return <RidePreferencesScreen />
     default:
       return null
   }

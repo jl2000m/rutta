@@ -2,6 +2,7 @@ import { motion } from "framer-motion"
 import { ArrowLeft, Clock3, Footprints, Star, Users } from "lucide-react"
 import { useState } from "react"
 import { BottomSheet } from "../components/bottom-sheet"
+import { CompatibilityBadge, CompatibilityReason } from "../components/ride-preferences-card"
 import { MapCanvas } from "../components/map-canvas"
 import {
   AvatarProfileButton,
@@ -16,6 +17,7 @@ import {
   formatTravelWith,
   type Persona,
 } from "../data/mock"
+import { computeCompatibility } from "../lib/ride-preferences"
 import { useApp } from "../state/app-context"
 
 interface Props {
@@ -24,7 +26,7 @@ interface Props {
 }
 
 export function PassengerMatchingScreen({ origin, destination }: Props) {
-  const { setFlow } = useApp()
+  const { setFlow, ridePreferences } = useApp()
   const [profilePersona, setProfilePersona] = useState<Persona | null>(null)
   const [profileAffinities, setProfileAffinities] = useState<string[]>([])
 
@@ -40,6 +42,9 @@ export function PassengerMatchingScreen({ origin, destination }: Props) {
     // Soft match: keep offers that share either end of the corridor (demo coverage).
     return matchesOrigin || matchesDestination
   })
+    .map((offer) => ({ offer, compatibility: computeCompatibility(ridePreferences, offer.persona.preferences) }))
+    // Smart matching: most compatible drivers first.
+    .sort((a, b) => b.compatibility.score - a.compatibility.score)
 
   return (
     <div className="relative h-full bg-mist-50">
@@ -102,7 +107,7 @@ export function PassengerMatchingScreen({ origin, destination }: Props) {
                 </motion.button>
               </div>
             ) : (
-              offers.map((offer, i) => {
+              offers.map(({ offer, compatibility }, i) => {
               const companionPersonas = offer.companions.map((c) => c.persona)
               const peopleInCar = companionPersonas.length + 1
               return (
@@ -136,7 +141,7 @@ export function PassengerMatchingScreen({ origin, destination }: Props) {
                           persona={offer.persona}
                           size={26}
                           onOpen={() => {
-                            setProfileAffinities(offer.routeAffinities)
+                            setProfileAffinities([...compatibility.highlights, ...offer.routeAffinities])
                             setProfilePersona(offer.persona)
                           }}
                         />
@@ -144,8 +149,9 @@ export function PassengerMatchingScreen({ origin, destination }: Props) {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between">
-                        <p className="text-[15px] font-extrabold text-ink-900">
+                        <p className="flex items-center gap-2 text-[15px] font-extrabold text-ink-900">
                           {offer.persona.name}
+                          <CompatibilityBadge compatibility={compatibility} />
                         </p>
                         <p className="text-[15px] font-extrabold text-brand-600">
                           {formatBalboa(offer.pricePerSeat)}
@@ -163,6 +169,8 @@ export function PassengerMatchingScreen({ origin, destination }: Props) {
                       </div>
                     </div>
                   </div>
+
+                  <CompatibilityReason compatibility={compatibility} />
 
                   {/* Group preview */}
                   <div className="mt-3 flex items-center gap-2.5 rounded-2xl bg-mist-50/90 px-3 py-2.5">

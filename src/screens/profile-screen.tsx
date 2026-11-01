@@ -8,6 +8,7 @@ import {
   Star,
 } from "lucide-react"
 import { DriverVehiclesSection } from "../components/driver-vehicles-section"
+import { RidePreferencesCard } from "../components/ride-preferences-card"
 import { StatusBadge } from "../components/status-badge"
 import { UserAvatar } from "../components/user-avatar"
 import { DIEGO } from "../data/mock"
@@ -84,6 +85,8 @@ function PassengerProfile() {
 
       <MemberBanner tripsCompleted={DIEGO.tripsCompleted} roleLabel="Pasajero" />
 
+      <RidePreferencesCard />
+
       <section className="mt-5 rounded-3xl border border-emerald-100 bg-white p-5 shadow-xl shadow-emerald-500/10">
         <div className="flex items-center gap-2.5">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-card">
@@ -155,6 +158,8 @@ function DriverProfile() {
       </div>
 
       <MemberBanner tripsCompleted={DIEGO.tripsCompleted} roleLabel="Conductor" />
+
+      <RidePreferencesCard />
 
       <section className="mt-5 rounded-3xl border border-emerald-100 bg-white p-5 shadow-xl shadow-emerald-500/10">
         <div className="flex items-center justify-between">

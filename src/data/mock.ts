@@ -1,3 +1,5 @@
+import type { RidePreferences } from "../lib/ride-preferences"
+
 export interface LocationNode {
   id: string
   name: string
@@ -19,6 +21,8 @@ export interface Persona {
   avatarHue: number
   photo: string
   verifications: string[]
+  /** Public ride preferences used by smart matching. */
+  preferences: RidePreferences
 }
 
 export interface Vehicle {
@@ -113,6 +117,7 @@ export const DIEGO: Persona = {
   avatarHue: 224,
   photo: "/avatars/avatar-diego.png",
   verifications: ["Cédula", "Correo corporativo"],
+  preferences: { conversation: "some", musicVolume: "low", musicGenres: ["Lo-fi", "Pop en español", "Podcasts"], topics: ["Tecnología", "Emprendimiento", "Finanzas"], temperature: "cool", seat: "any", musicControl: "shared", petsOk: false, foodOk: true },
 }
 
 export const CAMILA: Persona = {
@@ -126,6 +131,7 @@ export const CAMILA: Persona = {
   avatarHue: 330,
   photo: "/avatars/avatar-camila.png",
   verifications: ["Cédula", "Correo universitario"],
+  preferences: { conversation: "chatty", musicVolume: "low", musicGenres: ["Pop en español", "Reggaetón", "Lo-fi"], topics: ["Universidad", "Series y cine", "Música", "Viajes"], temperature: "cool", seat: "back", musicControl: "shared", petsOk: true, foodOk: true },
 }
 
 export const LUIS: Persona = {
@@ -139,6 +145,7 @@ export const LUIS: Persona = {
   avatarHue: 150,
   photo: "/avatars/avatar-luis.png",
   verifications: ["Cédula", "Correo corporativo"],
+  preferences: { conversation: "quiet", musicVolume: "off", musicGenres: ["Podcasts", "Noticias", "Jazz"], topics: ["Finanzas", "Tecnología", "Deportes"], temperature: "medium", seat: "front", musicControl: "driver", petsOk: false, foodOk: false },
 }
 
 export const MARIA: Persona = {
@@ -152,6 +159,7 @@ export const MARIA: Persona = {
   avatarHue: 28,
   photo: "/avatars/avatar-maria.png",
   verifications: ["Cédula"],
+  preferences: { conversation: "some", musicVolume: "loud", musicGenres: ["Pop en español", "Salsa", "Típico"], topics: ["Diseño", "Emprendimiento", "Comida", "Fitness"], temperature: "warm", seat: "any", musicControl: "shared", petsOk: true, foodOk: true },
 }
 
 export const YARIS: Vehicle = {
